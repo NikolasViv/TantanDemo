@@ -41,5 +41,4 @@ func (c *RelationshipsController) SetRelationships() {
 		c.Data["json"] = data
 	}
 	c.ServeJSON()
-
 }

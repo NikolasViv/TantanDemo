@@ -80,7 +80,7 @@ func SetRelationships(usrID int64, relation RetRelationships) (*Relation, error)
 		Id2:   relation.Id,
 		State: stateRevMap,
 	}
-	fmt.Println(rel)
+
 	var err error
 	if stateRevMap == LIKE {
 		r := o.Filter("id1", relation.Id).Filter("id2", usrID)
@@ -88,7 +88,7 @@ func SetRelationships(usrID int64, relation RetRelationships) (*Relation, error)
 			var usr Relation
 			r.RelatedSel().One(&usr)
 			if usr.State == LIKE {
-				//update id2 ==> match
+				//update id2 ==> id1 match
 				r.Update(orm.Params{"state": MATCH})
 
 				// update or insert id1 ==> id2 match
@@ -110,18 +110,19 @@ func SetRelationships(usrID int64, relation RetRelationships) (*Relation, error)
 
 		}
 
+	}
+
+	// insert or update relation id1 ==> id2 like or dislike
+	rr := o.Filter("id1", usrID).Filter("id2", relation.Id)
+	if exist := rr.Exist(); exist {
+		_, err := rr.Update(orm.Params{"state": stateRevMap})
+		if err == nil {
+			return &rel, err
+		}
 	} else {
-		rr := o.Filter("id1", usrID).Filter("id2", relation.Id)
-		if exist := rr.Exist(); exist {
-			_, err := rr.Update(orm.Params{"state": stateRevMap})
-			if err == nil {
-				return &rel, err
-			}
-		} else {
-			_, err := orm.NewOrm().Insert(&rel)
-			if err == nil {
-				return &rel, err
-			}
+		_, err := orm.NewOrm().Insert(&rel)
+		if err == nil {
+			return &rel, err
 		}
 	}
 
