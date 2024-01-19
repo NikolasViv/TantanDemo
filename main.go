@@ -11,7 +11,7 @@ import (
 func init() {
 	// set db driver
 	orm.RegisterDriver("postgres", orm.DRPostgres)
-	orm.RegisterDataBase("default", "postgres", "user=lixiaodong password=123456 dbname=lixiaodong host=127.0.0.1 port=5432 sslmode=disable")
+	orm.RegisterDataBase("default", "postgres", "user=helloworld password=123456 dbname=lixiaodong host=127.0.0.1 port=5432 sslmode=disable")
 	orm.RunSyncdb("default", false, true)
 }
 
